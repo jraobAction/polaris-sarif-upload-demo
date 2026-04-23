@@ -1,0 +1,29 @@
+name: CI-Polaris-SARIF-Upload
+on:
+    push:
+      branches: [main, master]
+    pull_request:
+      branches: [main, master]
+
+jobs:
+    polaris-sarif:
+      runs-on: ubuntu-latest
+      steps:
+      - name: Checkout Source
+        uses: actions/checkout@v4
+
+      - name: Polaris SARIF Scan
+        uses: blackduck-inc/black-duck-security-scan@v2
+        with:
+          polaris_server_url: ${{ vars.POLARIS_SERVER_URL }}
+          polaris_access_token: ${{ secrets.POLARIS_ACCESS_TOKEN }}
+          polaris_application_name: ${{ github.event.repository.name }}
+          polaris_project_name: ${{ github.event.repository.name }}
+          polaris_assessment_types: "SCA,SAST"
+          polaris_reports_sarif_create: true
+          polaris_reports_sarif_file_path: 'polaris-results.sarif.json'
+          polaris_reports_sarif_severities: 'CRITICAL,HIGH,MEDIUM'
+          polaris_reports_sarif_groupSCAIssues: true
+          polaris_reports_sarif_issue_types: 'SCA,SAST'
+          polaris_upload_sarif_report: true
+          github_token: ${{ secrets.TOKENACTION }}
